@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Концепция и техническое задание браузерного тактического FPS">
+  <title>GDD/TDD — браузерный тактический FPS</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101419;
+      --panel: #171e25;
+      --panel-2: #202a33;
+      --text: #e8edf2;
+      --muted: #aab6c2;
+      --accent: #8bd3a8;
+      --border: #34414c;
+      --warning: #f0c674;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    header,
+    main,
+    footer {
+      width: min(1100px, calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    header {
+      padding: 56px 0 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    main {
+      padding: 28px 0 60px;
+    }
+
+    footer {
+      padding: 20px 0 40px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+    }
+
+    h2 {
+      margin-top: 48px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--accent);
+    }
+
+    h3 {
+      margin-top: 28px;
+      color: #c6e7d2;
+    }
+
+    p,
+    li {
+      color: var(--text);
+    }
+
+    .subtitle,
+    .muted {
+      color: var(--muted);
+    }
+
+    .card {
+      margin: 18px 0;
+      padding: 18px 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .example {
+      margin: 14px 0;
+      padding: 12px 16px;
+      background: var(--panel-2);
+      border-left: 4px solid var(--accent);
+      border-radius: 6px;
+    }
+
+    .warning {
+      border-left-color: var(--warning);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0 24px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+      background: var(--panel);
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--panel-2);
+      color: var(--accent);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      padding: 2px 6px;
+      color: #d6f5df;
+      background: #26342d;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      header {
+        padding-top: 36px;
+      }
+
+      .card {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <p class="subtitle">Документ концепции и технического задания</p>
+    <h1>Тактический FPS для браузера</h1>
+    <p class="subtitle">
+      GDD/TDD: реалистичный PvE/PvP-шутер без установки, с адаптивной графикой,
+      ботами и тактическими системами.
+    </p>
+  </header>
+
+  <main>
+    <nav class="card toc" aria-label="Содержание">
+      <strong>Содержание</strong>
+      <ol>
+        <li><a href="#overview">Концепция и цели</a></li>
+        <li><a href="#visuals">Технологии и визуальный стиль</a></li>
+        <li><a href="#ai">ИИ ботов</a></li>
+        <li><a href="#weapons">Арсенал и баллистика</a></li>
+        <li><a href="#gameplay">Игровые механики</a></li>
+        <li><a href="#network">Сеть и режимы</a></li>
+        <li><a href="#performance">Производительность и совместимость</a></li>
+        <li><a href="#additional">Звук, интерфейс, управление и монетизация</a></li>
+        <li><a href="#risks">Резюме и ключевые риски</a></li>
+      </ol>
+    </nav>
+
+    <section id="overview">
+      <h2>1. Концепция и цели</h2>
+
+      <div class="card">
+        <p>
+          <strong>Жанр:</strong> тактический шутер от первого лица с режимами PvE,
+          кооперативом и PvP.
+        </p>
+        <p>
+          <strong>Платформа:</strong>современные настольные и мобильные браузеры,
+          запуск без установки.
+        </p>
+        <p>
+          <strong>Ключевая идея:</strong>короткие миссии, точная стрельба,
+          использование укрытий, ограниченные ресурсы и командная тактика.
+        </p>
+        <p>
+          <strong>Целевые игроки:</strong> поклонники тактических FPS, которым
+          важны позиционирование, управление отдачей и взаимодействие с командой.
+        </p>
+      </div>
+
+      <div class="example">
+        <strong>Пример игрового эпизода:</strong>
+        игрок с напарниками зачищает склад, отмечает противников, использует дым
+        для пересечения открытой зоны и выбирает — штурмовать дверь или обойти
+        объект через боковой вход.
+      </div>
+
+      <p>
+        Числовые показатели в документе — проектные ориентиры для прототипа.
+        Их необходимо проверять на целевых устройствах и корректировать после
+        профилирования.
+      </p>
+    </section>
+
+    <section id="visuals">
+      <h2>2. Технологический стек и визуальный стиль</h2>
+
+      <h3>2.1. Движок и рендеринг</h3>
+      <ul>
+        <li>
+          <strong>Three.js:</strong>гибкий вариант для команды с опытом
+          WebGL/WebGPU и кастомного рендеринга.
+        </li>
+        <li>
+          <strong>Babylon.js:</strong>подходит, если важны встроенные инструменты,
+          физика и готовые игровые компоненты.
+        </li>
+        <li>
+          <strong>PlayCanvas:</strong> вариант для работы с браузерным редактором
+          и совместного прототипирования.
+        </li>
+        <li>
+          <strong>WebGPU:</strong>основной путь для совместимых устройств;
+          <strong>WebGL2</strong> — запасной режим.
+        </li>
+      </ul>
+
+      <div class="example">
+        <strong>Пример:</strong> в WebGPU compute-шейдер обрабатывает пыль и
+        частицы. При переходе на WebGL2 используется CPU-обновление небольшого
+        числа эффектов, уменьшается количество динамических источников света и
+        отключаются дорогие постэффекты.
+      </div>
+
+      <h3>2.2. Освещение и материалы</h3>
+      <ul>
+        <li>Запечённое глобальное освещение для статических помещений.</li>
+        <li>Динамические точечные источники — для вспышек, фонарей и взрывов.</li>
+        <li>PBR-материалы с картами albedo, normal, roughness и ambient occlusion.</li>
+        <li>Отражения ограничить локальными probe-зонами и заранее рассчитанными картами.</li>
+      </ul>
+
+      <div class="example">
+        <strong>Пример:</strong> освещение потолочных ламп запекается в lightmap.
+        Вспышка выстрела включает короткий динамический свет примерно на
+        0,05 секунды; одновременно активны только ближайшие к камере вспышки.
+      </div>
+
+      <h3>2.3. Оптимизация графики</h3>
+      <ul>
+        <li>LOD-модели для оружия, персонажей и крупных объектов.</li>
+        <li>Frustum culling и occlusion culling для скрытых объектов.</li>
+        <li>Instancing для гильз, мелкого мусора, растительности и декалей.</li>
+        <li>Texture atlases для повторяющихся материалов.</li>
+        <li>Draco для геометрии; KTX2/Basis для GPU-текстур.</li>
+        <li>Потоковая загрузка ассетов уровня по мере приближения игрока.</li>
+      </ul>
+
+      <div class="example">
+        <strong>Пример:</strong>для оружия создаются три уровня LOD. Гильзы
+        создаются через instanced mesh; текстуры уровня хранятся в KTX2.
+        Целевой размер отдельного набора ассетов уровня — до 15 МБ, если это
+        подтверждается тестами и качеством контента.
+      </div>
+
+      <h3>2.4. Эффекты и постобработка</h3>
+      <ul>
+        <li>Пыль, искры и мелкие попадания — ограниченные по числу частицы.</li>
+        <li>Разрушения — заранее подготовленные варианты моделей, а не полноценная
+          симуляция разрушения.</li>
+        <li>Лёгкий bloom и виньетка; motion blur — опционально и преимущественно
+          при прицеливании.</li>
+        <li>Автоматическое снижение качества при просадке частоты кадров.</li>
+      </ul>
+
+      <div class="example">
+        <strong>Пример:</strong>лимит до 500 активных частиц пыли и попаданий.
+        При снижении FPS система сначала уменьшает частицы и качество теней,
+        затем снижает внутреннее разрешение рендера.
+      </div>
+
+      <h3>2.5. Целевые показатели графики</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Профиль</th>
+              <th>Ориентир</th>
+              <th>Настройки</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Минимальный ПК</td>
+              <td>Около 30 FPS</td>
+              <td>Низкие тени, меньше частиц, динамическое разрешение</td>
+            </tr>
+            <tr>
+              <td>Средний ноутбук</td>
+              <td>Цель — 60 FPS при 720p</td>
+              <td>Средние текстуры, ограниченные источники света</td>
+            </tr>
+            <tr>
+              <td>Современный ПК</td>
+              <td>60 FPS и выше</td>
+              <td>Высокое качество текстур и эффектов</td>
+            </tr>
+            <tr>
+              <td>Мобильное устройство</td>
+              <td>Цель — около 30 FPS</td>
+              <td>Сниженная дальность прорисовки и упрощённые эффекты</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <sec
